@@ -23,20 +23,15 @@ const emojisheriff = (req, res) => {
         .replace(/\*/g, firstSlackEmojiCode[0])
     : sheriffEmojiTemplate.replace(/\*/g, firstSlackEmojiCode[0]);
 
-  // Empty response to the channel to satisfy slack's API
-  res.end();
+  console.log("I'm sending");
 
-  // Post response to slack response url with emoji sheriff so
-  // you don't get the /sheriff :boop: record printed in slack
-  axios
-    .post(`${req.body.response_url}`, {
-      response_type: "in_channel",
-      text: `Howdy, I'm the sheriff of ${firstSlackEmojiCode[0]}\n\n${sheriffEmoji}`
-    })
-    // Not interested in handling response but am in error logging
-    .catch(function(error) {
-      console.log(error);
-    });
+  // Response to slack
+  res.json({
+    response_type: "in_channel",
+    text: `Howdy, I'm the sheriff of ${
+      firstSlackEmojiCode[0]
+    }\n\n${sheriffEmoji}`
+  });
 };
 
 app.use(bodyParser.urlencoded());
