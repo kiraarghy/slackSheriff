@@ -1,22 +1,41 @@
-require("http")
-  .createServer((req, res) => {
-    // Get the header string
-    const reqHeader = req.headers.header;
+const bodyParser = require("body-parser");
+const express = require("express");
+const axios = require("axios");
 
-    // Use RegEx to get the first slack emoji code
-    // toDo: pull skin colour modifiers if included
-    const firstSlackEmojiCode = reqHeader.match(/\:([^:]+)\:/g);
+const app = express();
+const port = process.env.PORT || 3000;
 
-    // This monstrosity is the template literal for the emoji sheriff
-    const sheriffEmojiTemplate = `               :sheriff: \n         *** \n     *    *     * \n:point_down:       **    :point_down: \n        *          * \n       *           * \n       :boot:            :boot:`;
+const emojisheriff = (req, res) => {
+  // Text field coming from slack
+  const text = req.body.text;
 
-    // Replace all '*' with slack emoji code
-    const sheriffEmoji = sheriffEmojiTemplate.replace(
-      /\*/g,
+  // Use RegEx to get the first slack emoji code
+  const firstSlackEmojiCode = text.match(/\:[^:]+\:(\:skin\-tone\-\d\:)?/);
+
+  // This monstrosity is the template literal for the emoji sheriff
+  const sheriffEmojiTemplate = `               :sheriff: \n         *** \n     *    *     * \n:point_down:     **      :point_down: \n        *          * \n       *           * \n       :boot:            :boot:`;
+
+  // Replace all '*' with slack emoji code
+  // If we are supplying a skin colour, it appends it to :point_down:
+  const sheriffEmoji = !!firstSlackEmojiCode[1]
+    ? sheriffEmojiTemplate
+        .replace(/\:point_down:/g, `:point_down:${firstSlackEmojiCode[1]}`)
+        .replace(/\*/g, firstSlackEmojiCode[0])
+    : sheriffEmojiTemplate.replace(/\*/g, firstSlackEmojiCode[0]);
+
+  console.log("I'm sending");
+
+  // Response to slack
+  res.json({
+    response_type: "in_channel",
+    text: `Howdy, I'm the sheriff of ${
       firstSlackEmojiCode[0]
-    );
+    }\n\n${sheriffEmoji}`
+  });
+};
 
-    // Response
-    res.end(`I'm the Sheriff of ${firstSlackEmojiCode}\n\n${sheriffEmoji}`);
-  })
-  .listen(process.env.PORT || 3000);
+app.use(bodyParser.urlencoded());
+
+app.post("/", (req, res) => emojisheriff(req, res));
+
+app.listen(port, () => console.log(`Howdy I'm listening on port ${port}!`));

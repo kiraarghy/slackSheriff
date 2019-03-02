@@ -1,0 +1,24 @@
+{
+  "name": "sheriff",
+  "version": "1.0.0",
+  "description": "This is a server that takes in a slack emoji code and appends that emoji into an emoji sheriff template.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kiraarghy/slackSherrif.git"
+  },
+  "author": "Kara Stubbs @kiraarghy",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kiraarghy/slackSheriff/issues"
+  },
+  "homepage": "https://github.com/kiraarghy/slackSheriff#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4"
+  }
+}
